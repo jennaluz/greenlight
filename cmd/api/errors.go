@@ -44,6 +44,10 @@ func (app *application) writeServerErrorResponse(w http.ResponseWriter, r *http.
 	app.writeErrorResponse(w, r, http.StatusInternalServerError, message)
 }
 
+func (app *application) writeBadRequestResponse(w http.ResponseWriter, r *http.Request, err error) {
+	app.writeErrorResponse(w, r, http.StatusBadRequest, err.Error())
+}
+
 func (app *application) writeNotFoundResponse(w http.ResponseWriter, r *http.Request) {
 	message := DefaultResponse{
 		Status: http.StatusNotFound,
@@ -62,4 +66,8 @@ func (app *application) writeMethodNotAllowedResponse(w http.ResponseWriter, r *
 	}
 
 	app.writeErrorResponse(w, r, http.StatusMethodNotAllowed, message)
+}
+
+func (app *application) writeUnprocessableEntityResponse(w http.ResponseWriter, r *http.Request, errors map[string]string) {
+	app.writeErrorResponse(w, r, http.StatusUnprocessableEntity, errors)
 }
