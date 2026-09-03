@@ -15,6 +15,8 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodGet, "/v1/healthcheck", app.handleHealthCheckGet)
 	router.HandlerFunc(http.MethodPost, "/v1/movies", app.handleMoviesPost)
 	router.HandlerFunc(http.MethodGet, "/v1/movies/:id", app.handleMovieGet)
+	router.HandlerFunc(http.MethodPut, "/v1/movies/:id", app.handleMoviePut)
+	router.HandlerFunc(http.MethodDelete, "/v1/movies/:id", app.handleMovieDelete)
 
 	return app.recoverPanic(router)
 }

@@ -71,3 +71,17 @@ func (app *application) writeMethodNotAllowedResponse(w http.ResponseWriter, r *
 func (app *application) writeUnprocessableEntityResponse(w http.ResponseWriter, r *http.Request, errors map[string]string) {
 	app.writeErrorResponse(w, r, http.StatusUnprocessableEntity, errors)
 }
+
+func (app *application) writeSuccessResponse(w http.ResponseWriter, r *http.Request, detail string) {
+	message := DefaultResponse{
+		Status: http.StatusOK,
+		Title:  "Success",
+		Detail: detail,
+	}
+
+	err := app.writeJSON(w, http.StatusOK, envelope{"success": message}, nil)
+	if err != nil {
+		app.logError(r, err)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+}

@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
+	"greenlight.jennaluz.dev/internal/data"
 
 	// Import the pq driver so that it can register itself with the database/sql
 	// package. Note that we alias this import to the blank identifier, to stop
@@ -35,6 +36,7 @@ type config struct {
 type application struct {
 	config config
 	logger *slog.Logger
+	models data.Models
 }
 
 func main() {
@@ -65,9 +67,13 @@ func main() {
 
 	defer db.Close()
 
-	logger.Info("database pool connection established")
+	logger.Info("Database pool connection established")
 
-	app := &application{config: cfg, logger: logger}
+	app := &application{
+		config: cfg,
+		logger: logger,
+		models: data.NewModels(db),
+	}
 
 	server := &http.Server{
 		Addr:         fmt.Sprintf(":%d", cfg.port),
