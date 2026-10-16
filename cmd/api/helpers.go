@@ -6,10 +6,12 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 
 	"github.com/julienschmidt/httprouter"
+	"greenlight.jennaluz.dev/internal/validator"
 )
 
 type envelope map[string]any
@@ -107,4 +109,49 @@ func (app *application) writeJSON(w http.ResponseWriter, status int, data envelo
 	w.Write(js)
 
 	return nil
+}
+
+// Returns a string value from the query string or the provided default value if
+// the no matching key could be found.
+func (app *application) readString(qs url.Values, key string, defaultValue string) string {
+	// Extract the value for a given key from the query string.
+	// If no key exists, this will return an emtpy string.
+	str := qs.Get(key)
+	if str == "" {
+		return defaultValue
+	}
+
+	return str
+}
+
+// Reads a string value from the query string and then splits it into a slice on
+// the comma character.
+// Returns the provided default value if no matching key could be found.
+func (app *application) readCSV(qs url.Values, key string, defaultValues []string) []string {
+	csv := qs.Get(key)
+	if csv == "" {
+		return defaultValues
+	}
+
+	return strings.Split(csv, ",")
+}
+
+// Reads a string value from the query string and converts it to an integer
+// before returning it.
+// Returns the provided default value if no matching key could be found.
+// Returns an error message in the provided Validator instance if it cannot be
+// converted to a valid integer.
+func (app *application) readInt(qs url.Values, key string, defaultValue int, v *validator.Validator) int {
+	str := qs.Get(key)
+	if str == "" {
+		return defaultValue
+	}
+
+	i, err := strconv.Atoi(str)
+	if err != nil {
+		v.AddError(key, "must be an integer value")
+		return defaultValue
+	}
+
+	return i
 }
