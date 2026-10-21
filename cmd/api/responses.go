@@ -72,6 +72,11 @@ func (app *application) writeUnprocessableEntityResponse(w http.ResponseWriter, 
 	app.writeErrorResponse(w, r, http.StatusUnprocessableEntity, errors)
 }
 
+func (app *application) writeTooManyRequestsResponse(w http.ResponseWriter, r *http.Request) {
+	message := "rate limit exceeded"
+	app.writeErrorResponse(w, r, http.StatusTooManyRequests, message)
+}
+
 func (app *application) writeSuccessResponse(w http.ResponseWriter, r *http.Request, detail string) {
 	message := DefaultResponse{
 		Status: http.StatusOK,

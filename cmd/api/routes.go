@@ -19,5 +19,9 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodPut, "/v1/movies/:id", app.handleMoviePut)
 	router.HandlerFunc(http.MethodDelete, "/v1/movies/:id", app.handleMovieDelete)
 
-	return app.recoverPanic(router)
+	// Wraper the router with rateLimit() middleware.
+	// The rate limit should come "after" the recover panic so that any panics
+	// in the rate limit can be recovered. Otherwise, the rate limit should be
+	// used as early as possible.
+	return app.recoverPanic(app.rateLimit(router))
 }
